@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoShip-Analyzer Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. 글로벌 테마 및 스타일 설정 */
+        * { box-sizing: border-box; }
+        body {
+            background-color: #0b0f19;
+            color: #daffde;
+            font-family: 'Urbanist', 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 슬라이드 뷰포트 컨테이너 (16:9 비율 유지) */
+        .presentation-deck {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            background-color: #0f172a;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 개별 슬라이드 정의 */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 50px 70px 90px 70px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* 백그라운드 그라데이션 및 그리드 효과 */
+        .presentation-deck::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 85% 15%, rgba(0, 212, 255, 0.12) 0%, transparent 45%),
+                        radial-gradient(circle at 15% 85%, rgba(222, 255, 154, 0.08) 0%, transparent 45%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 타이틀 스타일 지정 */
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #f5f5f5;
+            margin: 0 0 25px 0;
+            z-index: 2;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+            padding-bottom: 12px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slide-title span {
+            color: #00d4ff;
+        }
+
+        /* 2. 콘텐츠 레이아웃 구성 */
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+
+        .text-side {
+            width: 50%;
+        }
+
+        .graphic-side {
+            width: 50%;
+            height: 380px;
+            background-color: #1a2333;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 그리드 및 카드 타일 디자인 */
+        .tiled-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            width: 100%;
+        }
+
+        .tile {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            border-left: 4px solid #00d4ff;
+            transition: transform 0.3s ease;
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+        }
+
+        .tile h3 {
+            color: #00d4ff;
+            font-size: 22px;
+            margin: 0 0 12px 0;
+        }
+
+        .tile p {
+            color: #cbd5e1;
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* 리스트 항목 데코레이션 */
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 18px;
+            font-size: 18px;
+            color: #daffde;
+            line-height: 1.6;
+        }
+
+        .bullet-list li::before {
+            content: '➔';
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .bullet-list span {
+            color: #00d4ff;
+            font-weight: 500;
+        }
+
+        /* 표(Table) 스타일 구조화 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: #00d4ff;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        td {
+            padding: 16px;
+            font-size: 16px;
+            color: #f8fafc;
+            border-bottom: 1px solid #334155;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 수식 콘텐트 포맷팅 */
+        #formula-box {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px dashed rgba(222, 255, 154, 0.4);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* 지표 강조 레이아웃 (CII) */
+        .kpi-layout {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .kpi-card {
+            flex: 1;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .kpi-card.highlight {
+            border-color: #00d4ff;
+            background: linear-gradient(180deg, #1e293b 0%, rgba(0, 212, 255, 0.1) 100%);
+        }
+
+        .kpi-card h3 {
+            font-size: 70px;
+            font-weight: bold;
+            margin: 0;
+            color: #00d4ff;
+        }
+
+        .kpi-card p {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+
+        /* 자체 제작 차트 컴포넌트 */
+        .chart-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chart-bar-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .chart-label {
+            width: 150px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            color: #cbd5e1;
+        }
+
+        .chart-track {
+            flex-grow: 1;
+            height: 35px;
+            background-color: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #deff9a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: #0f172a;
+            font-weight: bold;
+            font-size: 15px;
+            transition: width 1s ease-in-out;
+        }
+
+        /* 3. 슬라이드 네비게이션 제어바 */
+        .nav-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #0b0f19;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            color: #00d4ff;
+        }
+
+        .slide-indicator {
+            color: #888;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        /* 4. 특수 버튼 디자인 (Streamlit 바로가기) */
+        .btn-streamlit {
+            background: linear-gradient(135deg, #00d4ff 0%, #deff9a 100%);
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            color: #0f172a;
+            display: inline-flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            gap: 10px;
+            margin-top: 35px;
+            padding: 14px 32px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .btn-streamlit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(0, 212, 255, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="presentation-deck">
+
+    <!-- Slide 1: 타이틀 커버 -->
+    <div class="slide active" id="slide1">
+        <div class="content-area" style="text-align: center; flex-direction: column;">
+            <h1 style="font-size: 72px; line-height: 1.1; margin: 0 0 10px 0; color: #f5f5f5;">🚢 <span>EcoShip-Analyzer</span></h1>
+            <p style="font-size: 26px; color: #daffde; margin: 10px 0 35px 0;">선종별 연료 효율 및 탄소 배출 시뮬레이션 대시보드</p>
+            <p style="font-size: 18px; color: #888; margin: 0;">Streamlit 기반 파이썬 데이터 분석 시스템</p>
+            <div>
+                <a href="https://bgg4gmmaareaaa7jztxas2.streamlit.app/" target="_blank" class="btn-streamlit">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 실시간 대시보드 실행 (streamlit.app)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: 시스템 개요 및 개발 배경 -->
+    <div class="slide" id="slide2">
+        <h2 class="slide-title"><span>01.</span> 시스템 개요 및 개발 배경</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="text-side">
+                    <ul class="bullet-list">
+                        <li>해운 산업의 <span>디지털 전환(DX)</span> 선도 및 환경 보호 기여</li>
+                        <li>국제해사기구(IMO) <span>CII 규제 강화</span>에 따른 신속 대응 인프라</li>
+                        <li>선종별/연료별 최적 운항 속도 도출 및 탄소 배출 실시간 정밀 연산</li>
+                        <li>Python 엔진 탑재로 신뢰성 높은 환경 성과 데이터 지원</li>
+                    </ul>
+                </div>
+                <div class="graphic-side">
+                    <!-- 자가 가공 친환경 선박 벡터 SVG -->
+                    <svg viewBox="0 0 400 300" width="100%" height="100%">
+                        <rect width="400" height="300" fill="#0f172a" />
+                        <path d="M 0,220 C 100,210 150,230 250,220 C 350,210 400,220 400,220 L 400,300 L 0,300 Z" fill="#1e3a8a" opacity="0.4"/>
+                        <path d="M 0,240 C 80,230 180,250 280,240 C 380,230 400,240 400,240 L 400,300 L 0,300 Z" fill="#0284c7" opacity="0.7"/>
+                        <!-- Ship Hull -->
+                        <path d="M 40,180 L 320,180 L 355,145 L 320,145 L 50,145 Z" fill="#0ea5e9" />
+                        <path d="M 50,145 L 320,145 L 315,125 L 60,125 Z" fill="#38bdf8" />
+                        <!-- Containers -->
+                        <rect x="80" y="85" width="40" height="40" fill="#ea580c" rx="2" />
+                        <rect x="125" y="85" width="40" height="40" fill="#16a34a" rx="2" />
+                        <rect x="170" y="85" width="40" height="40" fill="#2563eb" rx="2" />
+                        <rect x="215" y="85" width="40" height="40" fill="#eab308" rx="2" />
+                        <rect x="100" y="45" width="40" height="40" fill="#2563eb" rx="2" />
+                        <rect x="145" y="45" width="40" height="40" fill="#ea580c" rx="2" />
+                        <rect x="190" y="45" width="40" height="40" fill="#16a34a" rx="2" />
+                        <!-- Ship Cabin -->
+                        <rect x="270" y="65" width="30" height="60" fill="#f8fafc" />
+                        <rect x="280" y="45" width="15" height="20" fill="#cbd5e1" />
+                        <line x1="287" y1="45" x2="287" y2="25" stroke="#cbd5e1" stroke-width="2"/>
+                        <circle cx="287" cy="25" r="3" fill="#ef4444" />
+                        <text x="20" y="40" fill="#00d4ff" font-family="monospace" font-size="12">ECO-DX ACTIVE</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: EcoShip-Analyzer 핵심 기능 -->
+    <div class="slide" id="slide3">
+        <h2 class="slide-title"><span>02.</span> EcoShip-Analyzer 핵심 기능</h2>
+        <div class="content-area">
+            <div class="tiled-grid">
+                <div class="tile">
+                    <h3>📊 실시간 시뮬레이션</h3>
+                    <p>사용자가 컨트롤 패널을 제어하는 즉시 속도, 배수량, 선종 및 연료 변화에 연동하여 이산화탄소 예측 그래프와 수치 반영</p>
+                </div>
+                <div class="tile">
+                    <h3>🏅 IMO CII 등급 평가</h3>
+                    <p>IMO 친환경 가이드라인에 근거한 연간 배출 한계 대비 현재 상태를 분석하고 탄소 집약도 기준의 종합 A~E 등급 판정</p>
+                </div>
+                <div class="tile">
+                    <h3>📋 운항 기록 관리</h3>
+                    <p>Streamlit 세션 상태(Session State) 기반 축적 기술로 시뮬레이션 기록을 이력으로 관리하고 실시간 트렌드 피드백</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: 엔지니어링 연산 엔진: 해군제수법 -->
+    <div class="slide" id="slide4">
+        <h2 class="slide-title"><span>03.</span> 엔지니어링 연산 엔진: 해군제수법</h2>
+        <div class="content-area" style="flex-direction: column; align-items: flex-start;">
+            <p style="font-size: 20px; color: #cbd5e1; margin: 0 0 15px 0;">Admiralty Coefficient 기반 소요 제동 마력(BHP) 추정 연산 엔진</p>
+            <div id="formula-box" style="width: 100%;">
+                <math display="block" xmlns="http://www.w3.org/1998/Math/MathML" style="font-size: 32px; fill: #00d4ff;">
+                  <mi>C</mi>
+                  <mo>=</mo>
+                  <mfrac>
+                    <mrow>
+                      <msup><mi>&#x0394;</mi><mfrac><mn>2</mn><mn>3</mn></mfrac></msup>
+                      <mo>&#x00D7;</mo>
+                      <msup><mi>V</mi><mn>3</mn></msup>
+                    </mrow>
+                    <mi>BHP</mi>
+                  </mfrac>
+                </math>
+            </div>
+            <ul class="bullet-list" style="width: 100%;">
+                <li><span>&Delta; (Displacement):</span> 선박의 현재 수하 상태를 반영하는 만재 배수량 (ton)</li>
+                <li><span>V (Speed):</span> 마력 수요의 비약적 변동을 유발하는 선박 운항 속도 (knots)</li>
+                <li><span>BHP (Brake Horsepower):</span> 선체를 밀어내는 엔진 실질적 요구 출력 (kW) <span style="color:#deff9a;">[속도의 세제곱에 정비례]</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: 선종별 기본 제원 데이터베이스 -->
+    <div class="slide" id="slide5">
+        <h2 class="slide-title"><span>04.</span> 선종별 기본 제원 데이터베이스</h2>
+        <div class="content-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>선종 (Ship Type)</th>
+                        <th>배수량 (ton)</th>
+                        <th>설계속도 (kn)</th>
+                        <th>MCR (kW)</th>
+                        <th>기본 연료소모율 (SFOC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Container (10k TEU)</td>
+                        <td>120,000</td>
+                        <td>22.0</td>
+                        <td>50,000</td>
+                        <td>165 g/kWh</td>
+                    </tr>
+                    <tr>
+                        <td>Bulk Carrier (Capesize)</td>
+                        <td>180,000</td>
+                        <td>14.5</td>
+                        <td>18,000</td>
+                        <td>170 g/kWh</td>
+                    </tr>
+                    <tr>
+                        <td>VLCC (Tanker)</td>
+                        <td>300,000</td>
+                        <td>15.0</td>
+                        <td>25,000</td>
+                        <td>168 g/kWh</td>
+                    </tr>
+                    <tr>
+                        <td>LNGC</td>
+                        <td>90,000</td>
+                        <td>19.5</td>
+                        <td>35,000</td>
+                        <td>160 g/kWh</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Slide 6: 운항 조건 시뮬레이션 UI -->
+    <div class="slide" id="slide6">
+        <h2 class="slide-title"><span>05.</span> 운항 조건 시뮬레이션 UI 설계</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="text-side">
+                    <ul class="bullet-list">
+                        <li>사용자 입력 즉시 실시간 변환 피드백 구조 설계</li>
+                        <li>설계 한계 속도 도달 시 UI 경고 메시지 출력 가이드라인 마련</li>
+                        <li><span>연료 종류별 배출 계수(Cf)</span> 연동 모델 실시간 반영</li>
+                        <li>직관적인 Metric 카드 구성으로 5대 연산 가독화 완성</li>
+                    </ul>
+                </div>
+                <div class="graphic-side">
+                    <!-- 자가 가공 대시보드 UI SVG -->
+                    <svg viewBox="0 0 400 300" width="100%" height="100%">
+                        <rect width="400" height="300" fill="#0f172a" />
+                        <!-- Sidebar -->
+                        <rect x="10" y="10" width="100" height="280" fill="#1e293b" rx="8"/>
+                        <text x="20" y="35" fill="#00d4ff" font-family="sans-serif" font-weight="bold" font-size="10">CONTROLS</text>
+                        <text x="20" y="65" fill="#cbd5e1" font-family="sans-serif" font-size="8">Speed: 15.5 kn</text>
+                        <rect x="20" y="75" width="80" height="4" fill="#334155" rx="2"/>
+                        <circle cx="65" cy="77" r="5" fill="#00d4ff"/>
+                        <text x="20" y="105" fill="#cbd5e1" font-family="sans-serif" font-size="8">Fuel Type: LNG</text>
+                        <rect x="20" y="115" width="80" height="15" fill="#334155" rx="4"/>
+                        <text x="25" y="125" fill="#deff9a" font-family="sans-serif" font-size="8">▶ LNG</text>
+
+                        <!-- Main Display -->
+                        <rect x="120" y="10" width="270" height="280" fill="#1e293b" rx="8" />
+                        <text x="135" y="35" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="12">EcoShip Live Metrics</text>
+                        
+                        <rect x="135" y="55" width="75" height="50" fill="#0f172a" rx="6" stroke="#00d4ff" stroke-width="1"/>
+                        <text x="140" y="70" fill="#888" font-family="sans-serif" font-size="8">CO2 / Hour</text>
+                        <text x="140" y="90" fill="#00d4ff" font-family="sans-serif" font-weight="bold" font-size="11">12.4 Tons</text>
+
+                        <rect x="218" y="55" width="75" height="50" fill="#0f172a" rx="6" stroke="#deff9a" stroke-width="1"/>
+                        <text x="223" y="70" fill="#888" font-family="sans-serif" font-size="8">Fuel Cons.</text>
+                        <text x="223" y="90" fill="#deff9a" font-family="sans-serif" font-weight="bold" font-size="11">4.1 t/h</text>
+
+                        <rect x="301" y="55" width="75" height="50" fill="#0f172a" rx="6" stroke="#c084fc" stroke-width="1"/>
+                        <text x="306" y="70" fill="#888" font-family="sans-serif" font-size="8">CII Rating</text>
+                        <text x="306" y="90" fill="#c084fc" font-family="sans-serif" font-weight="bold" font-size="13">A Grade</text>
+
+                        <!-- Mock Graph -->
+                        <rect x="135" y="120" width="240" height="110" fill="#0f172a" rx="6" />
+                        <path d="M 145,210 Q 185,185 225,195 T 305,155 T 365,135" fill="none" stroke="#00d4ff" stroke-width="3" />
+                        <circle cx="365" cy="135" r="4" fill="#deff9a" />
+                        
+                        <rect x="135" y="245" width="240" height="30" fill="#f59e0b" fill-opacity="0.15" rx="4" stroke="#f59e0b" stroke-width="1" />
+                        <text x="145" y="263" fill="#f59e0b" font-family="sans-serif" font-size="8" font-weight="bold">⚠️ Optimization Mode Active</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: CII 등급 평가 시스템 -->
+    <div class="slide" id="slide7">
+        <h2 class="slide-title"><span>06.</span> CII 등급 평가 시스템</h2>
+        <div class="content-area">
+            <div class="kpi-layout">
+                <div class="kpi-card highlight">
+                    <h3>A</h3>
+                    <p>Major Superior (친환경 모범 선박)</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>C</h3>
+                    <p>Moderate (해운 기본 준수 등급)</p>
+                </div>
+                <div class="kpi-card">
+                    <h3>E</h3>
+                    <p>Inferior (배출 저감 최우선 과제)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 연료 종류별 탄소 배출계수 (Cf) 비교 -->
+    <div class="slide" id="slide8">
+        <h2 class="slide-title"><span>07.</span> 연료 종류별 탄소 배출계수 (Cf) 비교</h2>
+        <div class="content-area" style="flex-direction: column; justify-content: center;">
+            <div class="chart-wrapper">
+                <div class="chart-bar-group">
+                    <div class="chart-label">MDO (경유)</div>
+                    <div class="chart-track"><div class="chart-fill" style="width: 100%;">3.206</div></div>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-label">HFO (중유)</div>
+                    <div class="chart-track"><div class="chart-fill" style="width: 97%;">3.114</div></div>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-label">LNG</div>
+                    <div class="chart-track"><div class="chart-fill" style="width: 86%; background: linear-gradient(90deg, #00d4ff 0%, #10b981 100%);">2.750</div></div>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-label">Methanol</div>
+                    <div class="chart-track"><div class="chart-fill" style="width: 43%; background: linear-gradient(90deg, #10b981 0%, #deff9a 100%);">1.375</div></div>
+                </div>
+            </div>
+            <p style="text-align: center; color: #888; font-style: italic; margin-top: 30px; font-size: 15px;">
+                * 친환경 저탄소 대체연료(LNG, 메탄올) 적용 시 탄소배출량의 극적인 하강 수치를 정량적 지표로 제공합니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 9: 운항 기록 및 로그 분석 (Tab 2) -->
+    <div class="slide" id="slide9">
+        <h2 class="slide-title"><span>08.</span> 운항 기록 및 로그 분석 (Tab 2)</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div class="text-side">
+                    <ul class="bullet-list">
+                        <li>사용자 시뮬레이션 데이터를 실시간 누적 기록 관리</li>
+                        <li>Plotly 분산형 그래프 렌더링을 통한 시간 추적 시각화</li>
+                        <li>데이터 무결성 확보를 위한 소팅 및 초기화 기능 내장</li>
+                        <li>누적 분석 보고서 다운로드 지원을 위한 백엔드 기초 설계</li>
+                    </ul>
+                </div>
+                <div class="graphic-side">
+                    <!-- 차트 시뮬레이션 SVG -->
+                    <svg viewBox="0 0 400 300" width="100%" height="100%">
+                        <rect width="400" height="300" fill="#0f172a" />
+                        <line x1="50" y1="50" x2="350" y2="50" stroke="#1e293b" />
+                        <line x1="50" y1="110" x2="350" y2="110" stroke="#1e293b" />
+                        <line x1="50" y1="170" x2="350" y2="170" stroke="#1e293b" />
+                        <line x1="50" y1="230" x2="350" y2="230" stroke="#cbd5e1" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="50" y2="230" stroke="#cbd5e1" stroke-width="2"/>
+                        
+                        <text x="30" y="55" fill="#888" font-family="sans-serif" font-size="8">100%</text>
+                        <text x="30" y="145" fill="#888" font-family="sans-serif" font-size="8">50%</text>
+                        <text x="35" y="235" fill="#888" font-family="sans-serif" font-size="8">0</text>
+                        <text x="180" y="255" fill="#cbd5e1" font-family="sans-serif" font-size="10">Voyage Duration</text>
+                        <text x="15" y="140" fill="#cbd5e1" font-family="sans-serif" font-size="10" transform="rotate(-90,15,140)" text-anchor="middle">Cumulative CO2</text>
+
+                        <!-- Plotly Scatter Graph Style -->
+                        <path d="M 50,230 L 100,200 L 150,150 L 200,145 L 250,100 L 300,70 L 350,40" fill="none" stroke="#3b82f6" stroke-width="2" />
+                        <path d="M 50,230 L 100,210 L 150,180 L 200,175 L 250,150 L 300,130 L 350,110" fill="none" stroke="#10b981" stroke-width="2" />
+                        
+                        <circle cx="100" cy="200" r="4" fill="#3b82f6" />
+                        <circle cx="200" cy="145" r="4" fill="#3b82f6" />
+                        <circle cx="300" cy="70" r="4" fill="#3b82f6" />
+
+                        <circle cx="100" cy="210" r="4" fill="#10b981" />
+                        <circle cx="200" cy="175" r="4" fill="#10b981" />
+                        <circle cx="300" cy="130" r="4" fill="#10b981" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: 친환경 연료 전환 시뮬레이션 -->
+    <div class="slide" id="slide10">
+        <h2 class="slide-title"><span>09.</span> 친환경 연료 전환 시뮬레이션</h2>
+        <div class="content-area">
+            <div class="tiled-grid">
+                <div class="tile" style="border: none; background: transparent; padding: 0; text-align: center;">
+                    <div style="height: 150px; background-color: #0f172a; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center;">
+                        <svg viewBox="0 0 200 150" width="100%" height="100%">
+                          <circle cx="100" cy="65" r="40" fill="#1e293b" stroke="#00d4ff" stroke-width="2" />
+                          <path d="M 85,75 Q 100,45 115,75" fill="none" stroke="#deff9a" stroke-width="4" stroke-linecap="round" />
+                          <path d="M 90,85 Q 100,55 110,85" fill="none" stroke="#00d4ff" stroke-width="4" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 20px;">LNG Propulsion</h3>
+                    <p>친환경 도입 과도기 대안<br>전통 선박유 대비 14% 저감</p>
+                </div>
+                <div class="tile" style="border: none; background: transparent; padding: 0; text-align: center;">
+                    <div style="height: 150px; background-color: #0f172a; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center;">
+                        <svg viewBox="0 0 200 150" width="100%" height="100%">
+                          <path d="M 50,90 A 60,60 0 0,1 150,90" fill="none" stroke="#334155" stroke-width="12" stroke-linecap="round" />
+                          <path d="M 50,90 A 60,60 0 0,1 120,45" fill="none" stroke="#deff9a" stroke-width="12" stroke-linecap="round" />
+                          <line x1="100" y1="90" x2="115" y2="45" stroke="#ff4545" stroke-width="3" stroke-linecap="round" />
+                          <circle cx="100" cy="90" r="8" fill="#ffffff" />
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 20px;">Methanol Ready</h3>
+                    <p>차세대 최적 무탄소 대안<br>연소 효율 최대 극대화</p>
+                </div>
+                <div class="tile" style="border: none; background: transparent; padding: 0; text-align: center;">
+                    <div style="height: 150px; background-color: #0f172a; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center;">
+                        <svg viewBox="0 0 200 150" width="100%" height="100%">
+                          <rect x="30" y="20" width="140" height="110" rx="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="1" />
+                          <path d="M 45,100 L 75,70 L 105,80 L 135,45 L 155,50" fill="none" stroke="#00d4ff" stroke-width="3" stroke-linecap="round" />
+                          <circle cx="135" cy="45" r="4" fill="#deff9a" />
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 20px;">Route Optimization</h3>
+                    <p>저속운항 스마트 에코 설계<br>최적 시나리오 경로 구축</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: 결론 및 기대 효과 -->
+    <div class="slide" id="slide11">
+        <h2 class="slide-title"><span>10.</span> 결론 및 기대 효과</h2>
+        <div class="content-area" style="flex-direction: column; text-align: center;">
+            <p style="font-size: 28px; font-weight: bold; color: #00d4ff; margin-bottom: 25px;">
+                "친환경 조선해양의 새로운 데이터 중심 이정표"
+            </p>
+            <div style="max-width: 800px; line-height: 1.8; font-size: 19px; color: #cbd5e1;">
+                EcoShip-Analyzer는 복잡하고 정밀한 연산 모델을 누구나 손쉽게 활용할 수 있는 Streamlit 기반 대시보드로 성공적으로 탈바꿈했습니다. <br>
+                자율주행 모형선박 프로젝트의 최종 목표인 친환경 제어 경로 및 웨이포인트 시스템 기획에 탄탄한 데이터 기초를 제공할 것입니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Q&A -->
+    <div class="slide" id="slide12">
+        <div class="content-area" style="text-align: center; flex-direction: column;">
+            <h1 style="font-size: 80px; margin: 0 0 10px 0; color: #00d4ff; font-weight: bold;">Q & A</h1>
+            <p style="font-size: 24px; color: #cbd5e1; margin-bottom: 50px;">경청해 주셔서 감사합니다.</p>
+            <p style="font-size: 16px; color: #888; margin: 0;">Built with Python, Streamlit, Matplotlib & Plotly</p>
+        </div>
+    </div>
+
+    <!-- 네비게이션 제어바 -->
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+        <span class="slide-indicator" id="slideIndicator">1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Next <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+</div>
+
+<script>
+    // 슬라이드 인터랙션 스크립트
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slideIndicator');
+    let currentSlideIndex = 0;
+
+    function updateSlides() {
+        slides.forEach((slide, index) => {
+            if (index === currentSlideIndex) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+        slideIndicator.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentSlideIndex > 0) {
+            currentSlideIndex--;
+            updateSlides();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentSlideIndex < slides.length - 1) {
+            currentSlideIndex++;
+            updateSlides();
+        }
+    });
+
+    // 키보드 방향키 제어 지원
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' || event.key === ' ') {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateSlides();
+            }
+        } else if (event.key === 'ArrowLeft') {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlides();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
